@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BAOCHAUJP – Cổng Quản Trị Trung Tâm (Học ONL 1-1)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+/* Scoped Box-Sizing Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* src/components/chaujp/ChauJpPortal.css */
+/* Hệ màu Peach Rose độc quyền cho BAOCHAUJP */
+:root {
+  --cj-primary: #fb7185;
+  --cj-primary-light: #fda4af;
+  --cj-primary-dark: #e11d48;
+  --cj-primary-bg: #fff1f2;
+  --cj-canvas-bg: #fefcfb;
+  --cj-card-bg: #ffffff;
+  --cj-card-border: #ffe4e6;
+  --cj-text-main: #1e293b;
+  --cj-text-muted: #64748b;
+  --cj-correct: #10b981;
+  --cj-correct-bg: #ecfdf5;
+  --cj-correct-border: #a7f3d0;
+  --cj-wrong: #f43f5e;
+  --cj-wrong-bg: #fff1f2;
+  --cj-wrong-border: #fecdd3;
+  --cj-shadow-sm: 0 2px 10px rgba(251, 113, 133, 0.08);
+  --cj-shadow-md: 0 8px 24px rgba(251, 113, 133, 0.12);
+  --cj-radius-sm: 8px;
+  --cj-radius-md: 14px;
+  --cj-radius-lg: 20px;
+}
+
+.chaujp-portal-container {
+  min-height: 100vh;
+  background: var(--cj-canvas-bg);
+  color: var(--cj-text-main);
+  display: flex;
+  flex-direction: column;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Demo Control Bar */
+.demo-control-bar {
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 8px 16px;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  z-index: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.demo-badge-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.demo-pill {
+  background: #e11d48;
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.5px;
+}
+
+.demo-switch-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-demo-switch {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f8fafc;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+}
+
+.btn-demo-switch:hover {
+  background: var(--cj-primary);
+  border-color: var(--cj-primary-light);
+  color: #ffffff;
+}
+
+.btn-demo-switch.active {
+  background: var(--cj-primary-dark);
+  border-color: var(--cj-primary-light);
+  color: #ffffff;
+}
+
+/* Top Navbar */
+.cj-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--cj-card-border);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--cj-shadow-sm);
+}
+
+.cj-brand-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.cj-brand-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--cj-primary-dark);
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+}
+
+.cj-brand-tagline {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--cj-text-muted);
+  letter-spacing: 1px;
+}
+
+.cj-user-snippet {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cj-user-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--cj-text-main);
+}
+
+.btn-cj-logout {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: var(--cj-text-muted);
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cj-logout:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+/* Main Content Area */
+.cj-main-wrap {
+  flex: 1;
+  max-width: 980px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Login Card View */
+.cj-login-wrap {
+  box-sizing: border-box;
+  max-width: 420px;
+  width: 100%;
+  margin: 40px auto;
+  background: var(--cj-card-bg);
+  border: 1px solid var(--cj-card-border);
+  border-radius: var(--cj-radius-lg);
+  padding: 32px 24px;
+  box-shadow: var(--cj-shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cj-login-header {
+  text-align: center;
+}
+
+.cj-login-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--cj-text-main);
+}
+
+.cj-login-sub {
+  font-size: 0.85rem;
+  color: var(--cj-text-muted);
+  margin-top: 4px;
+}
+
+.cj-login-form {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cj-login-form .btn-cj-primary {
+  width: 100%;
+}
+
+.cj-form-group {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cj-form-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--cj-text-main);
+}
+
+.cj-input-text {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: var(--cj-radius-sm);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.cj-input-text:focus {
+  border-color: var(--cj-primary);
+  box-shadow: 0 0 0 3px rgba(251, 113, 133, 0.15);
+}
+
+.cj-input-flex-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  align-items: stretch;
+}
+
+.cj-input-flex-row .cj-input-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.btn-cj-primary {
+  box-sizing: border-box;
+  background: var(--cj-primary);
+  color: #ffffff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: var(--cj-radius-md);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(251, 113, 133, 0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-cj-primary:hover {
+  background: var(--cj-primary-dark);
+  transform: translateY(-1px);
+}
+
+.cj-quick-fill-box {
+  background: var(--cj-primary-bg);
+  border: 1px dashed var(--cj-primary-light);
+  border-radius: var(--cj-radius-sm);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+}
+
+/* Dashboard Summary Cards */
+.cj-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 768px) {
+  .cj-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.cj-stat-card {
+  background: var(--cj-card-bg);
+  border: 1px solid var(--cj-card-border);
+  border-radius: var(--cj-radius-md);
+  padding: 16px;
+  box-shadow: var(--cj-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cj-stat-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--cj-text-muted);
+}
+
+.cj-stat-val {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--cj-primary-dark);
+}
+
+/* Tabs Bar */
+.cj-tab-nav {
+  display: flex;
+  border-bottom: 2px solid #e2e8f0;
+  gap: 24px;
+}
+
+.cj-tab-btn {
+  background: none;
+  border: none;
+  padding: 10px 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--cj-text-muted);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.cj-tab-btn.active {
+  color: var(--cj-primary-dark);
+}
+
+.cj-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  background: var(--cj-primary-dark);
+  border-radius: 2px;
+}
+
+/* Exercises Grid */
+.cj-exercise-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 650px) {
+  .cj-exercise-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cj-exercise-card {
+  background: var(--cj-card-bg);
+  border: 1.5px solid var(--cj-card-border);
+  border-radius: var(--cj-radius-md);
+  padding: 16px;
+  box-shadow: var(--cj-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cj-exercise-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--cj-shadow-md);
+  border-color: var(--cj-primary-light);
+}
+
+.cj-card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cj-badge-status {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.cj-badge-status.ready {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.cj-badge-status.draft {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.cj-exercise-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--cj-text-main);
+  line-height: 1.35;
+}
+
+.cj-exercise-desc {
+  font-size: 0.82rem;
+  color: var(--cj-text-muted);
+  line-height: 1.5;
+}
+
+/* Admin Table Styles */
+.cj-table-container {
+  background: #ffffff;
+  border: 1px solid var(--cj-card-border);
+  border-radius: var(--cj-radius-md);
+  overflow-x: auto;
+  box-shadow: var(--cj-shadow-sm);
+}
+
+.cj-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  text-align: left;
+}
+
+.cj-table th {
+  background: #fff8f8;
+  color: var(--cj-text-main);
+  font-weight: 700;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--cj-card-border);
+  white-space: nowrap;
+}
+
+.cj-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.cj-table tr:hover {
+  background: #fffdfd;
+}
+
+/* Action Buttons in Table */
+.btn-action-pill {
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+}
+
+.btn-action-pass {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #059669;
+}
+
+.btn-action-pass:hover {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.btn-action-delete {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #e11d48;
+}
+
+.btn-action-delete:hover {
+  background: #e11d48;
+  color: #ffffff;
+}
+
+/* Modal Backdrop & Sheet */
+.cj-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.cj-modal-sheet {
+  box-sizing: border-box;
+  background: #ffffff;
+  width: 100%;
+  max-width: 480px;
+  border-radius: var(--cj-radius-lg);
+  padding: 24px;
+  box-shadow: var(--cj-shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: modalPop 0.2s ease-out;
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.cj-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cj-modal-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--cj-text-main);
+}
+
+/* Progress Mini Bar */
+.mini-progress-track {
+  width: 100%;
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.mini-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cj-primary) 0%, var(--cj-primary-dark) 100%);
+  border-radius: 3px;
+}
+
+/* Site Footer */
+.cj-footer {
+  border-top: 1px solid var(--cj-card-border);
+  padding: 24px 16px;
+  text-align: center;
+  background: #ffffff;
+  margin-top: auto;
+}
+
+.cj-footer-brand {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--cj-primary-dark);
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+.cj-footer-sub {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--cj-text-muted);
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--cj-canvas-bg);
+      color: var(--cj-text-main);
+    }
+    .app-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      z-index: 10000;
+      font-size: 0.88rem;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    .app-toast.show { display: flex; }
+  </style>
+</head>
+<body>
+  <div class="chaujp-portal-container">
+    <header class="cj-navbar">
+      <div class="cj-brand-block">
+        <span class="cj-brand-title">BAOCHAUJP QUẢN TRỊ VIÊN</span>
+        <span class="cj-brand-tagline">HỆ THỐNG QUẢN LÝ HỌC VIÊN & BẢNG ĐIỂM TINH GỌN</span>
+      </div>
+      <div class="cj-user-snippet">
+        <a href="index.html" class="btn-cj-logout" style="text-decoration: none; font-weight: 700;">
+          Xem Cổng Học Viên &rarr;
+        </a>
+      </div>
+    </header>
+
+    <main class="cj-main-wrap" id="admin-main-wrap">
+      <!-- Injected by JS -->
+    </main>
+
+    <footer class="cj-footer">
+      <div class="cj-footer-brand">BAOCHAUJP HỌC ONL 1-1</div>
+      <div class="cj-footer-sub">HỆ THỐNG QUẢN TRỊ TINH GỌN • 2026</div>
+    </footer>
+  </div>
+
+  <!-- MODAL THÊM HỌC VIÊN CHUYÊN NGHIỆP (TÊN, LỚP, MÃ, MẬT KHẨU) -->
+  <div class="cj-modal-backdrop" id="add-student-modal" style="display: none;" onclick="closeAddModal()">
+    <div class="cj-modal-sheet" onclick="event.stopPropagation()">
+      <div class="cj-modal-header">
+        <h2 class="cj-modal-title">Thêm Học Viên Mới</h2>
+        <button type="button" class="btn-cj-logout" style="padding: 6px; border-radius: 50%;" onclick="closeAddModal()">✕</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div class="cj-form-group">
+          <label class="cj-form-label" for="add-name-input">Họ và Tên Học Viên (*)</label>
+          <input type="text" id="add-name-input" class="cj-input-text" placeholder="Ví dụ: Nguyễn Văn B, Lê Thị Mai..." autofocus>
+        </div>
+
+        <div class="cj-form-group">
+          <label class="cj-form-label" for="add-class-select">Lớp Học</label>
+          <select id="add-class-select" class="cj-input-text">
+            <option value="cls-jft-01">Lớp JFT-01 (Kèm 1-1)</option>
+            <option value="cls-minna-01">Lớp Minna N5 Cơ Bản</option>
+          </select>
+        </div>
+
+        <div class="cj-form-group">
+          <label class="cj-form-label" for="add-code-input">Mã Học Viên (Tự sinh hoặc tự đặt)</label>
+          <div class="cj-input-flex-row">
+            <input type="text" id="add-code-input" class="cj-input-text" placeholder="VD: BC-003">
+            <button type="button" class="btn-prev" style="white-space: nowrap; font-size: 0.8rem; flex-shrink: 0;" onclick="generateNextCode()">Tự sinh</button>
+          </div>
+        </div>
+
+        <div style="background: #f8fafc; padding: 12px; border-radius: 8px; font-size: 0.82rem; color: #475569;">
+          Mật khẩu mặc định: <strong style="color: var(--cj-primary-dark);">chaujp</strong> (Học viên dùng mã này cùng mật khẩu để đăng nhập).
+        </div>
+
+        <div id="add-error-box" style="display: none; color: #e11d48; font-size: 0.82rem; background: #fff1f2; padding: 8px; border-radius: 8px;"></div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+        <button type="button" class="btn-prev" onclick="closeAddModal()">Hủy</button>
+        <button type="button" class="btn-cj-primary" onclick="confirmAddStudent()">+ Thêm Học Viên</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="app-toast" id="app-toast">
+    <span id="toast-text">Thông báo</span>
+  </div>
+
+  <script>
+    const DEFAULT_STUDENTS = [
+      {
+        code: 'Chaujpjft',
+        name: 'Nguyễn Văn A',
+        classId: 'cls-jft-01',
+        className: 'Lớp JFT-01 (Kèm 1-1)',
+        defaultPassword: 'chaujp',
+        status: 'studying',
+        createdAt: '2026-10-15'
+      },
+      {
+        code: 'BC-001',
+        name: 'Trần Văn Bình',
+        classId: 'cls-jft-01',
+        className: 'Lớp JFT-01 (Kèm 1-1)',
+        defaultPassword: 'chaujp',
+        status: 'passed',
+        passedDate: '2026-10-28',
+        passedExam: 'JFT-Basic A2',
+        createdAt: '2026-09-01'
+      },
+      {
+        code: 'BC-002',
+        name: 'Lê Hoàng Yến',
+        classId: 'cls-minna-01',
+        className: 'Lớp Minna N5 Cơ Bản',
+        defaultPassword: 'chaujp',
+        status: 'studying',
+        createdAt: '2026-10-20'
+      }
+    ];
+
+    const DEFAULT_CLASSES = [
+      { id: 'cls-jft-01', name: 'Lớp JFT-01 (Kèm 1-1)' },
+      { id: 'cls-minna-01', name: 'Lớp Minna N5 Cơ Bản' }
+    ];
+
+    const DEFAULT_SUBMISSIONS = [
+      {
+        id: 'sub-bc-001-1',
+        studentCode: 'BC-001',
+        examType: 'jft',
+        examId: 'jft-01',
+        examTitle: 'JFT-Basic A2 • Đề số 02',
+        score: 34,
+        totalQuestions: 36,
+        percentage: 94,
+        submittedAt: '2026-10-26T14:30:00Z'
+      }
+    ];
+
+    const STORAGE_KEY = 'chaujp_portal_state_v2';
+    let appState = {
+      students: DEFAULT_STUDENTS,
+      classes: DEFAULT_CLASSES,
+      submissions: DEFAULT_SUBMISSIONS
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          appState.students = parsed.students || DEFAULT_STUDENTS;
+          appState.classes = parsed.classes || DEFAULT_CLASSES;
+          appState.submissions = parsed.submissions || DEFAULT_SUBMISSIONS;
+        }
+      } catch (e) {}
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {}
+    }
+
+    loadState();
+
+    let adminTab = 'students';
+    let searchTerm = '';
+    let classFilter = 'all';
+    let statusFilter = 'all';
+
+    function showToast(msg) {
+      const el = document.getElementById('app-toast');
+      document.getElementById('toast-text').innerText = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 3000);
+    }
+
+    function getStudentProgress(studentCode) {
+      const subs = appState.submissions.filter(s => s.studentCode.toLowerCase() === studentCode.toLowerCase());
+      const jftDone = new Set(subs.filter(s => s.examType === 'jft').map(s => s.examId)).size;
+      const minnaDone = new Set(subs.filter(s => s.examType === 'minna').map(s => s.examId)).size;
+      const totalDone = jftDone + minnaDone;
+      const completionRate = Math.min(100, Math.round((totalDone / 60) * 100));
+      return { totalDone, completionRate };
+    }
+
+    function render() {
+      const total = appState.students.length;
+      const passed = appState.students.filter(s => s.status === 'passed').length;
+      const passRate = total > 0 ? Math.round((passed / total) * 100) : 0;
+      const totalSubs = appState.submissions.length;
+      let avgProg = 0;
+      if (total > 0) {
+        avgProg = Math.round(appState.students.reduce((acc, s) => acc + getStudentProgress(s.code).completionRate, 0) / total);
+      }
+
+      const filtered = appState.students.filter(s => {
+        const matchSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase()) || s.code.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchClass = classFilter === 'all' || s.classId === classFilter;
+        const matchStatus = statusFilter === 'all' || s.status === statusFilter;
+        return matchSearch && matchClass && matchStatus;
+      });
+
+      let rowsHtml = '';
+      if (filtered.length === 0) {
+        rowsHtml = '<tr><td colspan="7" style="text-align: center; padding: 32px; color: var(--cj-text-muted);">Không tìm thấy học viên</td></tr>';
+      } else {
+        filtered.forEach(s => {
+          const p = getStudentProgress(s.code);
+          rowsHtml += `
+            <tr>
+              <td><strong style="color: var(--cj-primary-dark);">${s.code}</strong></td>
+              <td><strong>${s.name}</strong></td>
+              <td><span style="font-size: 0.82rem; color: #475569;">${s.className}</span></td>
+              <td><code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.78rem;">${s.defaultPassword}</code></td>
+              <td style="min-width: 140px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700;">
+                  <span>${p.totalDone}/60 bài</span>
+                  <span>${p.completionRate}%</span>
+                </div>
+                <div class="mini-progress-track"><div class="mini-progress-fill" style="width: ${p.completionRate}%;"></div></div>
+              </td>
+              <td>
+                ${s.status === 'passed' ? '<span style="color: #059669; font-weight: 800; font-size: 0.78rem; background: #ecfdf5; padding: 3px 8px; border-radius: 12px; border: 1px solid #a7f3d0;">Đã Đỗ JFT</span>' : '<span style="color: #64748b; font-size: 0.78rem; font-weight: 600;">Đang học</span>'}
+              </td>
+              <td>
+                <div style="display: flex; gap: 6px; justify-content: center;">
+                  <button type="button" class="btn-action-pill btn-action-pass" onclick="togglePass('${s.code}')">${s.status === 'passed' ? 'Bỏ đỗ' : 'Báo đỗ'}</button>
+                  <button type="button" class="btn-action-pill" style="background: #f8fafc; border-color: #e2e8f0; color: #334155;" onclick="copyCreds('${s.code}')">Sao chép</button>
+                  <button type="button" class="btn-action-pill btn-action-delete" onclick="deleteStudent('${s.code}')">Xóa</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        });
+      }
+
+      let subRowsHtml = '';
+      if (appState.submissions.length === 0) {
+        subRowsHtml = '<tr><td colspan="7" style="text-align: center; padding: 32px; color: var(--cj-text-muted);">Chưa có bài nộp nào</td></tr>';
+      } else {
+        appState.submissions.forEach(sub => {
+          const s = appState.students.find(x => x.code === sub.studentCode);
+          const isPass = sub.percentage >= 60;
+          subRowsHtml += `
+            <tr>
+              <td style="font-size: 0.8rem; color: #64748b;">${new Date(sub.submittedAt).toLocaleString('vi-VN')}</td>
+              <td><strong style="color: var(--cj-primary-dark);">${sub.studentCode}</strong></td>
+              <td>${s ? s.name : 'Học viên'}</td>
+              <td><strong>${sub.examTitle}</strong></td>
+              <td><strong>${sub.score}</strong> / ${sub.totalQuestions}</td>
+              <td><span style="font-weight: 800; color: ${isPass ? '#059669' : '#e11d48'};">${sub.percentage}%</span></td>
+              <td><span style="color: ${isPass ? '#059669' : '#e11d48'}; background: ${isPass ? '#ecfdf5' : '#fff1f2'}; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 800;">${isPass ? 'ĐẠT' : 'CHƯA ĐẠT'}</span></td>
+            </tr>
+          `;
+        });
+      }
+
+      document.getElementById('admin-main-wrap').innerHTML = `
+        <section style="display: flex; flex-direction: column; gap: 20px;">
+          <div style="background: #ffffff; border: 1px solid var(--cj-card-border); border-radius: var(--cj-radius-md); padding: 18px; box-shadow: var(--cj-shadow-sm); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <h1 style="margin: 0; font-size: 1.35rem; font-weight: 800; color: var(--cj-text-main);">Quản Trị Trung Tâm BAOCHAUJP</h1>
+              <div style="font-size: 0.85rem; color: var(--cj-text-muted); margin-top: 4px;">Theo dõi học viên, lớp học và tình hình làm bài 1-1</div>
+            </div>
+            <div>
+              <button type="button" class="btn-cj-primary" style="padding: 8px 16px; font-size: 0.85rem;" onclick="openAddModal()">+ Thêm Học Viên</button>
+            </div>
+          </div>
+
+          <div class="cj-stats-grid">
+            <div class="cj-stat-card"><span class="cj-stat-label">Tổng Số Học Viên</span><span class="cj-stat-val">${total}</span></div>
+            <div class="cj-stat-card"><span class="cj-stat-label">Học Viên Đã Đỗ Kỳ Thi</span><span class="cj-stat-val" style="color: #059669;">${passed} <span style="font-size: 0.85rem;">(${passRate}%)</span></span></div>
+            <div class="cj-stat-card"><span class="cj-stat-label">Tổng Lượt Nộp Bài</span><span class="cj-stat-val">${totalSubs}</span></div>
+            <div class="cj-stat-card"><span class="cj-stat-label">Tiến Độ TB Toàn Khóa</span><span class="cj-stat-val">${avgProg}%</span><div class="mini-progress-track"><div class="mini-progress-fill" style="width: ${avgProg}%;"></div></div></div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div class="cj-tab-nav">
+              <button type="button" class="cj-tab-btn ${adminTab === 'students' ? 'active' : ''}" onclick="adminTab = 'students'; render();">Quản Lý Học Viên (${filtered.length})</button>
+              <button type="button" class="cj-tab-btn ${adminTab === 'submissions' ? 'active' : ''}" onclick="adminTab = 'submissions'; render();">Lịch Sử Nộp Bài (${appState.submissions.length})</button>
+            </div>
+
+            ${adminTab === 'students' ? `
+              <div style="display: flex; flex-direction: column; gap: 14px;">
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; background: #ffffff; padding: 12px; border-radius: var(--cj-radius-md); border: 1px solid var(--cj-card-border);">
+                  <input type="text" class="cj-input-text" style="height: 38px; font-size: 0.85rem; flex: 1; min-width: 200px;" placeholder="Tìm theo tên hoặc mã..." value="${searchTerm}" oninput="searchTerm = this.value; render();">
+                  <select class="cj-input-text" style="width: auto; height: 38px; font-size: 0.85rem;" onchange="classFilter = this.value; render();">
+                    <option value="all" ${classFilter === 'all' ? 'selected' : ''}>Tất cả lớp học</option>
+                    <option value="cls-jft-01" ${classFilter === 'cls-jft-01' ? 'selected' : ''}>Lớp JFT-01 (Kèm 1-1)</option>
+                    <option value="cls-minna-01" ${classFilter === 'cls-minna-01' ? 'selected' : ''}>Lớp Minna N5 Cơ Bản</option>
+                  </select>
+                  <select class="cj-input-text" style="width: auto; height: 38px; font-size: 0.85rem;" onchange="statusFilter = this.value; render();">
+                    <option value="all" ${statusFilter === 'all' ? 'selected' : ''}>Tất cả trạng thái</option>
+                    <option value="studying" ${statusFilter === 'studying' ? 'selected' : ''}>Đang học</option>
+                    <option value="passed" ${statusFilter === 'passed' ? 'selected' : ''}>Đã đỗ kỳ thi</option>
+                  </select>
+                </div>
+                <div class="cj-table-container">
+                  <table class="cj-table">
+                    <thead><tr><th>Mã HV</th><th>Họ và Tên</th><th>Lớp Học</th><th>Mật Khẩu</th><th>Tiến Độ Toàn Khóa</th><th>Trạng Thái</th><th style="text-align: center;">Thao Tác</th></tr></thead>
+                    <tbody>${rowsHtml}</tbody>
+                  </table>
+                </div>
+              </div>
+            ` : `
+              <div class="cj-table-container">
+                <table class="cj-table">
+                  <thead><tr><th>Thời Gian Nộp</th><th>Mã HV</th><th>Họ và Tên</th><th>Bài Tập</th><th>Điểm Số</th><th>Tỉ Lệ %</th><th>Kết Quả</th></tr></thead>
+                  <tbody>${subRowsHtml}</tbody>
+                </table>
+              </div>
+            `}
+          </div>
+        </section>
+      `;
+    }
+
+    function togglePass(code) {
+      const s = appState.students.find(x => x.code === code);
+      if (s) {
+        if (s.status === 'studying') {
+          s.status = 'passed';
+          showToast('Đã báo đỗ cho ' + s.name);
+        } else {
+          s.status = 'studying';
+          showToast('Đã chuyển ' + s.name + ' về trạng thái Đang học');
+        }
+        saveState();
+        render();
+      }
+    }
+
+    function copyCreds(code) {
+      const s = appState.students.find(x => x.code === code);
+      if (s) {
+        const text = 'Kính gửi học viên ' + s.name + ',\nThông tin đăng nhập hệ thống BAOCHAUJP (Học ONL 1-1):\n- Mã học viên: ' + s.code + '\n- Mật khẩu: ' + s.defaultPassword + '\n- Lớp: ' + s.className + '\nChúc bạn học tập tốt!';
+        navigator.clipboard?.writeText(text);
+        showToast('Đã sao chép tài khoản của ' + s.name);
+      }
+    }
+
+    function deleteStudent(code) {
+      const s = appState.students.find(x => x.code === code);
+      if (s && confirm('Bạn có chắc muốn xóa học viên ' + s.name + ' (' + s.code + ')?')) {
+        appState.students = appState.students.filter(x => x.code !== code);
+        appState.submissions = appState.submissions.filter(x => x.studentCode !== code);
+        saveState();
+        render();
+        showToast('Đã xóa học viên ' + s.name);
+      }
+    }
+
+    // ── MODAL THÊM HỌC VIÊN ────────────────────────────────────
+    function openAddModal() {
+      document.getElementById('add-name-input').value = '';
+      document.getElementById('add-code-input').value = 'BC-' + String(appState.students.length + 1).padStart(3, '0');
+      document.getElementById('add-class-select').value = 'cls-jft-01';
+      document.getElementById('add-error-box').style.display = 'none';
+      document.getElementById('add-student-modal').style.display = 'flex';
+      setTimeout(() => document.getElementById('add-name-input').focus(), 50);
+    }
+
+    function closeAddModal() {
+      document.getElementById('add-student-modal').style.display = 'none';
+    }
+
+    function generateNextCode() {
+      document.getElementById('add-code-input').value = 'BC-' + String(appState.students.length + 1).padStart(3, '0');
+    }
+
+    function confirmAddStudent() {
+      const name = document.getElementById('add-name-input').value.trim();
+      const clsId = document.getElementById('add-class-select').value;
+      let code = document.getElementById('add-code-input').value.trim();
+      const errBox = document.getElementById('add-error-box');
+
+      if (!name) {
+        errBox.innerText = 'Vui lòng nhập họ và tên học viên';
+        errBox.style.display = 'block';
+        return;
+      }
+      if (!code) {
+        code = 'BC-' + String(appState.students.length + 1).padStart(3, '0');
+      }
+      if (appState.students.some(s => s.code.toLowerCase() === code.toLowerCase())) {
+        errBox.innerText = 'Mã học viên "' + code + '" đã tồn tại. Vui lòng chọn mã khác.';
+        errBox.style.display = 'block';
+        return;
+      }
+
+      const clsName = clsId === 'cls-minna-01' ? 'Lớp Minna N5 Cơ Bản' : 'Lớp JFT-01 (Kèm 1-1)';
+      const newS = {
+        code,
+        name,
+        classId: clsId,
+        className: clsName,
+        defaultPassword: 'chaujp',
+        status: 'studying',
+        createdAt: new Date().toISOString().split('T')[0]
+      };
+
+      appState.students.unshift(newS);
+      saveState();
+      closeAddModal();
+      render();
+      showToast('Đã thêm học viên ' + newS.name + ' (' + newS.code + ')');
+    }
+
+    render();
+  </script>
+</body>
+</html>
